@@ -9,7 +9,7 @@
         <X />
       </button>
     </div>
-    
+
     <nav class="sidebar-nav">
       <router-link
         v-for="item in menuItems"
@@ -22,7 +22,7 @@
         <span class="nav-text">{{ item.name }}</span>
       </router-link>
     </nav>
-    
+
     <div class="sidebar-footer">
       <button @click="logout" class="logout-btn">
         <LogOut class="nav-icon" />
@@ -30,7 +30,7 @@
       </button>
     </div>
   </aside>
-  
+
   <div v-if="isMobileOpen" @click="closeMobileSidebar" class="mobile-overlay md:hidden"></div>
 </template>
 
@@ -38,26 +38,30 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { 
-  GraduationCap, 
-  LayoutDashboard, 
-  Users, 
-  BookOpen, 
-  User, 
+import {
+  GraduationCap,
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  User,
   LogOut,
-  X 
+  Calendar,
+  Settings, // ✅ Tambahkan icon Settings
+  X
 } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
-
 const isMobileOpen = ref(false)
 
+// ✅ Menu lengkap termasuk "Pengaturan"
 const menuItems = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Mahasiswa', path: '/students', icon: Users },
   { name: 'Mata Kuliah', path: '/courses', icon: BookOpen },
-  { name: 'Profil', path: '/profile', icon: User }
+  { name: 'Profil', path: '/profile', icon: User },
+  { name: 'Jadwal Kuliah', path: '/jadwal', icon: Calendar },
+  { name: 'Pengaturan', path: '/settings', icon: Settings } // ✅ Tambahan menu
 ]
 
 const logout = () => {
@@ -69,7 +73,6 @@ const closeMobileSidebar = () => {
   isMobileOpen.value = false
 }
 
-// Expose method for parent component
 defineExpose({
   toggleMobile: () => {
     isMobileOpen.value = !isMobileOpen.value
@@ -198,7 +201,7 @@ defineExpose({
     transition: transform 0.3s ease;
     z-index: 30;
   }
-  
+
   .sidebar.mobile-open {
     transform: translateX(0);
   }

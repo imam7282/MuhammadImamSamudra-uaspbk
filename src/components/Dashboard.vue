@@ -1,107 +1,86 @@
 <template>
   <div class="dashboard">
     <div class="dashboard-header">
-      <h1>Dashboard</h1>
-      <p>Selamat datang di Sistem Manajemen Mahasiswa</p>
+      <h1>📊 EduSystem Dashboard</h1>
+      <p class="subtext">Pantau data mahasiswa dan mata kuliah secara real-time</p>
     </div>
-    
+
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon students">
+      <div class="stat-card bg-blue">
+        <div class="icon-circle">
           <Users />
         </div>
-        <div class="stat-content">
-          <h3>Total Mahasiswa</h3>
-          <p class="stat-number">{{ totalStudents }}</p>
+        <div>
+          <p class="label">Total Mahasiswa</p>
+          <h2>{{ totalStudents }}</h2>
         </div>
       </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon courses">
+
+      <div class="stat-card bg-green">
+        <div class="icon-circle">
           <BookOpen />
         </div>
-        <div class="stat-content">
-          <h3>Total Mata Kuliah</h3>
-          <p class="stat-number">{{ totalCourses }}</p>
+        <div>
+          <p class="label">Total Mata Kuliah</p>
+          <h2>{{ totalCourses }}</h2>
         </div>
       </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon gpa">
+
+      <div class="stat-card bg-orange">
+        <div class="icon-circle">
           <TrendingUp />
         </div>
-        <div class="stat-content">
-          <h3>Rata-rata IPK</h3>
-          <p class="stat-number">{{ averageGPA }}</p>
+        <div>
+          <p class="label">Rata-rata IPK</p>
+          <h2>{{ averageGPA }}</h2>
         </div>
       </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon enrolled">
+
+      <div class="stat-card bg-purple">
+        <div class="icon-circle">
           <UserCheck />
         </div>
-        <div class="stat-content">
-          <h3>Total Pendaftar</h3>
-          <p class="stat-number">{{ totalEnrolled }}</p>
+        <div>
+          <p class="label">Total Pendaftar</p>
+          <h2>{{ totalEnrolled }}</h2>
         </div>
       </div>
     </div>
-    
+
     <div class="dashboard-content">
       <div class="chart-section">
         <div class="chart-card">
-          <h3>Distribusi Mahasiswa per Jurusan</h3>
+          <h3>🎓 Distribusi Mahasiswa per Jurusan</h3>
           <canvas ref="studentChart"></canvas>
         </div>
-        
         <div class="chart-card">
-          <h3>Trend Pendaftaran Mata Kuliah</h3>
+          <h3>📈 Trend Pendaftaran Mata Kuliah</h3>
           <canvas ref="courseChart"></canvas>
         </div>
       </div>
-      
+
       <div class="recent-section">
         <div class="recent-card">
-          <h3>Mahasiswa Terbaru</h3>
-          <div class="recent-list">
-            <div
-              v-for="student in recentStudents"
-              :key="student.id"
-              class="recent-item"
-            >
-              <div class="recent-avatar">
-                {{ getInitials(student.name) }}
-              </div>
-              <div class="recent-info">
-                <p class="recent-name">{{ student.name }}</p>
-                <p class="recent-detail">{{ student.major }} - {{ student.nim }}</p>
-              </div>
-              <div class="recent-badge">
-                <span class="badge success">{{ student.status }}</span>
-              </div>
+          <h3>🆕 Mahasiswa Terbaru</h3>
+          <div v-for="student in recentStudents" :key="student.id" class="recent-item">
+            <div class="avatar">{{ getInitials(student.name) }}</div>
+            <div class="recent-info">
+              <p class="name">{{ student.name }}</p>
+              <p class="details">{{ student.major }} - {{ student.nim }}</p>
             </div>
+            <span class="badge success">{{ student.status }}</span>
           </div>
         </div>
-        
+
         <div class="recent-card">
-          <h3>Mata Kuliah Populer</h3>
-          <div class="recent-list">
-            <div
-              v-for="course in popularCourses"
-              :key="course.id"
-              class="recent-item"
-            >
-              <div class="recent-avatar course-avatar">
-                {{ course.code }}
-              </div>
-              <div class="recent-info">
-                <p class="recent-name">{{ course.name }}</p>
-                <p class="recent-detail">{{ course.instructor }}</p>
-              </div>
-              <div class="recent-badge">
-                <span class="badge info">{{ course.enrolled }}/{{ course.capacity }}</span>
-              </div>
+          <h3>🔥 Mata Kuliah Populer</h3>
+          <div v-for="course in popularCourses" :key="course.id" class="recent-item">
+            <div class="avatar course">{{ course.code }}</div>
+            <div class="recent-info">
+              <p class="name">{{ course.name }}</p>
+              <p class="details">{{ course.instructor }}</p>
             </div>
+            <span class="badge info">{{ course.enrolled }}/{{ course.capacity }}</span>
           </div>
         </div>
       </div>
@@ -110,7 +89,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useStudentsStore } from '../stores/students'
 import { useCoursesStore } from '../stores/courses'
 import { Users, BookOpen, TrendingUp, UserCheck } from 'lucide-vue-next'
@@ -121,14 +100,11 @@ Chart.register(...registerables)
 const studentsStore = useStudentsStore()
 const coursesStore = useCoursesStore()
 
-// Initialize data on component mount
 onMounted(async () => {
   await Promise.all([
     studentsStore.fetchStudents(),
     coursesStore.fetchCourses()
   ])
-  
-  // Initialize charts after data is loaded
   initializeCharts()
 })
 
@@ -141,10 +117,8 @@ const averageGPA = computed(() => studentsStore.averageGPA)
 const totalEnrolled = computed(() => coursesStore.totalEnrolled)
 
 const recentStudents = computed(() => studentsStore.students.slice(0, 4))
-const popularCourses = computed(() => 
-  coursesStore.courses
-    .sort((a, b) => b.enrolled - a.enrolled)
-    .slice(0, 4)
+const popularCourses = computed(() =>
+  coursesStore.courses.sort((a, b) => b.enrolled - a.enrolled).slice(0, 4)
 )
 
 const getInitials = (name) => {
@@ -153,8 +127,7 @@ const getInitials = (name) => {
 
 const initializeCharts = () => {
   if (!studentChart.value || !courseChart.value) return
-  
-  // Student distribution chart
+
   const studentCtx = studentChart.value.getContext('2d')
   new Chart(studentCtx, {
     type: 'doughnut',
@@ -176,8 +149,7 @@ const initializeCharts = () => {
       }
     }
   })
-  
-  // Course enrollment chart
+
   const courseCtx = courseChart.value.getContext('2d')
   new Chart(courseCtx, {
     type: 'line',
@@ -214,86 +186,63 @@ const initializeCharts = () => {
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.dashboard-header {
-  margin-bottom: 2rem;
+  padding: 2rem;
 }
 
 .dashboard-header h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.5rem;
 }
 
-.dashboard-header p {
+.subtext {
   color: #6b7280;
-  font-size: 1.125rem;
+  font-size: 1rem;
+  margin-bottom: 2rem;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
 .stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
   gap: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  align-items: center;
+  padding: 1.5rem;
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.stat-icon {
+.icon-circle {
   width: 3rem;
   height: 3rem;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
 }
 
-.stat-icon.students {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-}
-
-.stat-icon.courses {
-  background: linear-gradient(135deg, #10b981, #047857);
-}
-
-.stat-icon.gpa {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.stat-icon.enrolled {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-}
-
-.stat-content h3 {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
+.stat-card h2 {
+  font-size: 1.75rem;
   margin: 0;
 }
+
+.label {
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.bg-blue { background: #3b82f6; }
+.bg-green { background: #10b981; }
+.bg-orange { background: #f59e0b; }
+.bg-purple { background: #8b5cf6; }
 
 .dashboard-content {
   display: grid;
@@ -301,28 +250,22 @@ const initializeCharts = () => {
   gap: 2rem;
 }
 
-.chart-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 .chart-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 
 .chart-card h3 {
   font-size: 1.125rem;
+  margin-bottom: 1rem;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 1rem;
 }
 
 .chart-card canvas {
-  height: 200px !important;
+  height: 220px !important;
 }
 
 .recent-section {
@@ -333,81 +276,62 @@ const initializeCharts = () => {
 
 .recent-card {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .recent-card h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  color: #111827;
   margin-bottom: 1rem;
-}
-
-.recent-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 .recent-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  padding: 0.5rem 0;
 }
 
-.recent-item:hover {
-  background: #f9fafb;
-}
-
-.recent-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
+.avatar {
+  width: 2.25rem;
+  height: 2.25rem;
   background: #3b82f6;
   color: white;
   border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 0.75rem;
 }
 
-.recent-avatar.course-avatar {
+.avatar.course {
   background: #10b981;
-  font-size: 0.625rem;
+  font-size: 0.7rem;
 }
 
 .recent-info {
   flex: 1;
 }
 
-.recent-name {
+.name {
   font-weight: 600;
-  color: #1f2937;
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  color: #1f2937;
 }
 
-.recent-detail {
-  color: #6b7280;
+.details {
   font-size: 0.75rem;
-  margin: 0;
-}
-
-.recent-badge {
-  display: flex;
-  align-items: center;
+  color: #6b7280;
 }
 
 .badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.7rem;
+  border-radius: 999px;
   font-weight: 500;
 }
 
@@ -424,20 +348,6 @@ const initializeCharts = () => {
 @media (max-width: 1024px) {
   .dashboard-content {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .chart-section {
-    gap: 1rem;
-  }
-  
-  .recent-section {
-    gap: 1rem;
   }
 }
 </style>
