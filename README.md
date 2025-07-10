@@ -1,3 +1,30 @@
+# 🎓 EduSystem - UAS PBK
+
+Proyek UAS Pemrograman Berbasis Komponen (PBK) menggunakan Vue 3 dan Vite. Aplikasi ini adalah sistem manajemen akademik sederhana.
+
+## 📌 Fitur Utama
+- 🔐 Proteksi route dengan autentikasi sederhana
+- 🌙 Toggle mode gelap (dark mode)
+- 📊 Dashboard statistik dengan Chart.js
+- 👨‍🎓 Manajemen Mahasiswa
+- 📚 Manajemen Mata Kuliah
+- 🗓️ Jadwal Kuliah
+- ⚙️ Pengaturan aplikasi
+- 🚪 Logout
+
+## ⚙️ Teknologi
+- Vue 3 + Vite
+- Vue Router
+- Tailwind CSS
+- Chart.js
+- Pinia (opsional)
+- Toastification (opsional)
+
+## ▶️ Cara Menjalankan
+```bash
+npm install
+npm run dev
+
 # Vue 3 + Vite
 
 # Modern Student Management System
